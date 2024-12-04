@@ -12,7 +12,7 @@ const simplePlantUML = require("@akebifiky/remark-simple-plantuml"); // объя
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Языковой онлайн практикум',
-  tagline: 'helloworld',
+  tagline: 'Документация для проекта',
   favicon: 'img/favicon.ico',
   url: 'https://babaykaen.github.io',
   baseUrl: '/tbankfintech',
@@ -60,7 +60,7 @@ const config = {
       {
         specs: [
           {
-            id: 'petstore',
+            id: 'practicum',
             spec: 'api_specs/openapi.yaml',
           },
         ],
