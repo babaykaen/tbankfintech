@@ -7,6 +7,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+const simplePlantUML = require("@akebifiky/remark-simple-plantuml"); // объявляем плагин для plantuml
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -31,6 +32,10 @@ const config = {
     locales: ['en'],
   },
 
+  //подключаем плагин для drawio
+  plugins: [
+    ['drawio', {}]
+  ],
   presets: [
     [
       'classic',
@@ -38,32 +43,34 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
+          routeBasePath: 'docs',
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/babaykaen/tbankfintech',
+          remarkPlugins: [simplePlantUML], //подключаем плагин для plantuml
         },
-        blog: {
-          showReadingTime: false,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
       }),
     ],
+    // подключаем плагин для OPENAPI
+    [
+      'redocusaurus',
+      {
+        specs: [
+          {
+            id: 'petstore',
+            spec: 'api_specs/openapi.yaml',
+          },
+        ],
+        theme: {
+          primaryColor: '#1890ff',
+        },
+      }
+    ],
   ],
+
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */

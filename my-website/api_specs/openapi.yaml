@@ -1,0 +1,455 @@
+openapi: 3.0.3
+info:
+  title: API Языкового практикума
+  description: Описание эндпоинтов для экранов из макета
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+security:
+  - BearerAuth: [] 
+tags:
+  - name: Редактирование профиля
+  - name: Работа поддержки
+  - name: Пользовательское взаимодействие
+paths:
+  /api/v1/PAccounts/{UserID}:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+    get:
+      tags:
+        - Редактирование профиля
+      summary: Получение данных пользователя для ЛК
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Пользователь не найден
+  /api/v1/PAccounts/{UserID}/avatar:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+    patch:
+      tags:
+        - Редактирование профиля
+      summary: Изменение аватара
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User/properties/Avatar'
+      responses:
+        '200': 
+          description: Аватар успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Пользователь не найден
+  /api/v1/PAccounts/{UserID}/username:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+    patch:
+      tags:
+        - Редактирование профиля
+      summary: Изменение никнейма
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User/properties/Username'
+      responses:
+        '200': 
+          description: Никнейм успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Пользователь не найден
+  /api/v1/forms/{UserID}:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+    get:
+      tags:
+        - Редактирование профиля
+      summary: Получение данных анкеты в ЛК
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Form"
+        '404':
+          description: Пользователь не найден
+    post:
+      tags:
+        - Редактирование профиля
+      summary: Создание новой анкеты
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/Form"
+                - $ref: "#/components/schemas/IdempotencyKey"
+      responses:
+        '201':
+          description: Анкета успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Form"
+        '500':
+          description: Внутренняя ошибка
+        
+  /api/v1/forms/{UserID}/red/{FormID}:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+        - name: FormID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Form/properties/FormID'
+    patch:
+      tags:
+        - Редактирование профиля
+      summary: Изменение раздела "о себе" в анкете
+      description: Для редактирования других полей анкеты будут похожие патч-методы, отличия только в эндпоинте и теле запроса
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Form/properties/ReadMe'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+    delete:
+      tags:
+        - Редактирование профиля
+      summary: Удаление анкеты
+      responses:
+        '204': 
+          description: Анкета успешно удалена
+        '404':
+          description: Анкета не найдена
+
+  /api/v1/PAccounts/{UserID}/AuthorForms:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+    post:
+      tags:
+        - Редактирование профиля
+      summary: Создание заявки на становление автором
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/AuthorForm"
+                - $ref: "#/components/schemas/IdempotencyKey"
+      responses:
+        '201':
+          description: Заявка создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthorForm"
+        '500':
+          description: Внутренняя ошибка
+  /api/v1/forms:
+    get:
+      tags:
+        - Пользовательское взаимодействие
+      summary: Получение списка анкет для поиска собеседников
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormsList'
+  /api/v1/likedforms/{UserID}/{FormID}:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+        - name: FormID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Form/properties/FormID'
+    post:
+      tags:
+        - Пользовательское взаимодействие
+      summary: Добавть анкету в список понравившихся
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdempotencyKey"
+      responses:
+        '201': 
+          description: Лайк поставлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  UserID:
+                    $ref: '#/components/schemas/User/properties/UserID'
+                  FormID:
+                    $ref: '#/components/schemas/Form/properties/FormID'
+                  TotalLiked:
+                    description: Общее количество лайкнутых анкет
+                    type: integer
+                    example: 12
+        '404':
+          description: Анкета не найдена
+  /api/v1/unlikedforms/{UserID}/{FormID}:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+        - name: FormID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Form/properties/FormID'
+    post:
+      tags:
+        - Пользовательское взаимодействие
+      summary: Поставить дизлайк на анкету
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdempotencyKey"
+      responses:
+        '201': 
+          description: Дизайк поставлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  UserID:
+                    $ref: '#/components/schemas/User/properties/UserID'
+                  FormID:
+                    $ref: '#/components/schemas/Form/properties/FormID'
+                  TotalDisLiked:
+                    description: Общее количество анкет с дизлайком
+                    type: integer
+                    example: 12
+        '404':
+          description: Анкета не найдена
+  /api/v1/chats/{UserID}:
+    parameters:
+        - name: UserID
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/User/properties/UserID'
+    get:
+      tags:
+        - Пользовательское взаимодействие
+      summary: Получение списка чатов для экрана 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatsList'
+        '500':
+          description: Внутренняя ошибка
+      
+components:
+  schemas:
+    User:
+      description: Пользователь
+      type: object
+      properties:
+        Username:
+          type: string
+          example: Иван 
+        Avatar:
+          type: string
+          format: url
+        Email:
+          type: string
+          example: Ivan@mail.ru
+        AuthorFlag:
+          type: boolean
+        UserID:
+          type: string
+          format: uuid
+    Form:
+      description: Анкета пользоваеля
+      type: object
+      properties:
+        FormID:
+          type: string
+          format: uuid
+        Author:
+          type: object
+          properties:
+            UserID:
+              $ref: '#/components/schemas/User/properties/UserID'
+        ReadMe:
+          description: Раздел "О себе"
+          type: string
+          example: Привет я Иван)
+        NativeLangID:
+          description: ID Роднго языка
+          type: integer
+        InterestedLanguage:
+          description: Язык для изучения
+          type: object
+          properties:
+            LangID:
+              type: integer
+            LangLevel:
+              description: Уровень владения языком
+              type: string
+              example: B2
+        Tags:
+          description: Список тэгов
+          type: array
+          items:
+            $ref: '#/components/schemas/Tags'
+    FormsList:
+      description: Список анкет
+      type: object
+      properties:
+        List:
+          description: Список анкет
+          type: array
+          items:
+            $ref: '#/components/schemas/Form'
+        LeftPtr:
+          description: Указатель на начало списка, нужен для корректной пагинации
+          type: object
+          properties:
+            LeftPtr:
+              $ref: '#/components/schemas/Form/properties/FormID'
+        RightPtr:
+          description: Указатель на конец списка, нужен для корректной пагинации
+          type: object
+          properties:
+            LeftPtr:
+              $ref: '#/components/schemas/Form/properties/FormID'
+
+    AuthorForm:
+      description: Заявка на становление автором
+      type: object
+      properties:
+        FormID:
+          type: string
+          format: uuid
+        Author:
+          type: object
+          properties:
+            UserID:
+              $ref: '#/components/schemas/User/properties/UserID'
+        SertificateLink:
+          description: Ссылка на документ об образовании
+          type: string
+          format: URL
+        Education:
+          type: string
+          enum: ['Среднее', 'Неоконченное высшее', 'Бакалавр', 'Магистр', 'Кандидат наук']
+        ReadMe:
+          description: Раздел "О себе"
+          type: string
+          example: Я хочу создавать образовательный контент
+    Tags:
+      description: Теги интересов
+      type: string
+      enum: ['Спорт', 'Фильмы', 'История', 'Поэзия']
+    IdempotencyKey:
+      description: Ключ идемпотентности для пост-запроса
+      type: object
+      properties:
+        IdempKey:
+          type: string
+          example: qwe4567zxc
+    Chat:
+      description: Чат 2х пользователей
+      type: object
+      properties:
+        CompanionID:
+          $ref: '#/components/schemas/User/properties/UserID'
+        CompanionAvatar:
+          $ref: '#/components/schemas/User/properties/Avatar'
+        CompanionUsername:
+          $ref: '#/components/schemas/User/properties/Username'
+        ChatID:
+          type: string
+          format: uuid
+        LastMessage:
+          type: string
+          example: До завтра
+    ChatsList:
+      description: Список чатов
+      type: object
+      properties:
+        List:
+          description: Список чатов
+          type: array
+          items:
+            $ref: '#/components/schemas/Chat'
+        LeftPtr:
+          description: Указатель на начало списка, нужен для корректной пагинации
+          type: object
+          properties:
+            LeftPtr:
+              $ref: '#/components/schemas/Chat/properties/ChatID'
+        RightPtr:
+          description: Указатель на конец списка, нужен для корректной пагинации
+          type: object
+          properties:
+            LeftPtr:
+              $ref: '#/components/schemas/Chat/properties/ChatID'    
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
