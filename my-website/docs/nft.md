@@ -1,5 +1,5 @@
 ---
-sidebar_postion: 6
+sidebar_postion: 7
 ---
 # НФТ
 
